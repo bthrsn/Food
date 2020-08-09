@@ -1,6 +1,6 @@
-// Задача, сделать переключатель табов
-
 window.addEventListener('DOMContentLoaded', () => {
+
+  // Задача, сделать переключатель табов
   const tabs = document.querySelectorAll('.tabheader__item'),
     tabsContent = document.querySelectorAll('.tabcontent'),
     tabsParent = document.querySelector('.tabheader__items');
@@ -48,7 +48,6 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // Задача, сделать таймер
-
   const deadline = '2020-09-17';
 
   const getTimeRemaining = (endtime) => {
@@ -86,7 +85,6 @@ window.addEventListener('DOMContentLoaded', () => {
       minutes = timer.querySelector('#minutes'),
       seconds = timer.querySelector('#seconds');
 
-
     // внутри функция обновляет часы
     const updateClock = () => {
       // Сколько осталось времени до дедлайна
@@ -110,5 +108,60 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   setClock('.timer', deadline);
+
+  // Задача, сделать модальное окно
+  // Делаем через дата атрибуты
+  const modal = document.querySelector('.modal'),
+    modalOpenBtn = document.querySelectorAll('[data-modal]'),
+    modalCloseBtn = document.querySelector('[data-close]');
+
+  // функция для закрытия окна, так как она повторяется, а нужно следовать DRY = dont repeat yorself
+  const closeModal = () => {
+    modal.classList.add('hide');
+    modal.classList.remove('show');
+    document.body.style.overflow = ''
+  }
+
+  const openModal = () => {
+    modal.classList.remove('hide');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    // Если пользователь уже открыл окно, оно не будет открываться снова через указанное время
+    clearInterval(modalTimerId);
+  }
+
+  // остановим показ модального окна после первой прокрутки
+  const showModalByScroll = () => {
+    if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+      openModal();
+      window.removeEventListener('scroll', showModalByScroll);
+    }
+  }
+
+  modalOpenBtn.forEach(item => {
+    item.addEventListener('click', openModal);
+  });
+
+  modalCloseBtn.addEventListener('click', closeModal);
+
+  // Если кликаем вне окна - оно закрывается
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  // Закрываем окно на клавишу esc
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Escape' && modal.classList.contains('show')) {
+      closeModal();
+    }
+  });
+
+  // Вызываем модальное окно через некоторое время
+  const modalTimerId = setTimeout(openModal, 5000);
+
+  // Вызываем модальное окно если пользователь проскролил страницу до конца
+  window.addEventListener('scroll', showModalByScroll);
 
 });
