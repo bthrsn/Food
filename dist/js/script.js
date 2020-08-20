@@ -165,7 +165,7 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', showModalByScroll);
 
       // Задача: шаблонизировать карточки меню
-const menuItem = document.querySelector('.menu__item'),
+const menuCards = document.querySelector('.menu_cards'),
 subtitle = document.querySelector('.menu__item-subtitle'),
 description = document.querySelector('.menu__item-descr'),
 img = document.querySelector('.menu__item-img'),
@@ -173,17 +173,17 @@ total = document.querySelector('.menu__item-total');
 
 // Создаем класс для карточек
 class MenuItem {
-  constructor (subtitle, description, img, total) {
-      this.subtitle = subtitle,
-this.description = description,
+  constructor (img, subtitle, description, total) {
 this.img = img,
+this.subtitle = subtitle,
+this.description = description,
 this.total = total
     }
 
     generateCard() {
-      return
-       `<div class="menu__item">
-      <img class="menu__item_img" src=${this.img} alt="" />
+      const card = `
+      <div class="menu__item">
+      <img class="menu__item_img" src=${this.img} alt="${this.subtitle}" />
       <h3 class="menu__item-subtitle">Меню ${this.subtitle}</h3>
       <div class="menu__item-descr">
       ${this.description}
@@ -193,8 +193,11 @@ this.total = total
         <div class="menu__item-cost">Цена:</div>
         <div class="menu__item-total"><span>${this.total}</span> грн/день</div>
       </div>
-    </div>`
+    </div>
+    `
+    return menuCards.insertAdjacentHTML('afterbegin', card);
     }
+
 }
 // Создаем три карточки
 const fitness = new MenuItem("img/tabs/vegy.jpg", '"Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', '229');
@@ -203,8 +206,8 @@ const premium = new MenuItem("img/tabs/elite.jpg", '"Премиум"', 'В ме�
 
 const lean = new MenuItem("img/tabs/post.jpg", '"Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', '430');
 
-fitness.generateCard();
-premium.generateCard();
 lean.generateCard();
+premium.generateCard();
+fitness.generateCard();
 
 });
