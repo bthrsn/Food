@@ -159,29 +159,35 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // Вызываем модальное окно через некоторое время
-  const modalTimerId = setTimeout(openModal, 5000);
+  // const modalTimerId = setTimeout(openModal, 5000);
 
   // Вызываем модальное окно если пользователь проскролил страницу до конца
   window.addEventListener('scroll', showModalByScroll);
 
       // Задача: шаблонизировать карточки меню
-const menuCards = document.querySelector('.menu_cards'),
-subtitle = document.querySelector('.menu__item-subtitle'),
-description = document.querySelector('.menu__item-descr'),
-img = document.querySelector('.menu__item-img'),
-total = document.querySelector('.menu__item-total');
+// const menuCards = document.querySelector('.menu_cards');
 
 // Создаем класс для карточек
 class MenuItem {
-  constructor (img, subtitle, description, total) {
-this.img = img,
-this.subtitle = subtitle,
-this.description = description,
-this.total = total
-    }
+  constructor(img, subtitle, description, total, parentSelector) {
+this.img = img;
+this.subtitle = subtitle;
+this.description = description;
+this.total = total;
+// передадим родителя, куда будем пушить элемент
+this.parent = document.querySelector(parentSelector);
+this.transfer = 27; 
+this.changeToUAH();
+}
 
-    generateCard() {
-      const card = `
+// метод для конвертации из долларов в гривны
+changeToUAH() {
+  this.total = this.total * this.transfer;
+}
+
+    render() {
+      const element = document.createElement('div');
+      element.innerHTML = `
       <div class="menu__item">
       <img class="menu__item_img" src=${this.img} alt="${this.subtitle}" />
       <h3 class="menu__item-subtitle">Меню ${this.subtitle}</h3>
@@ -194,20 +200,38 @@ this.total = total
         <div class="menu__item-total"><span>${this.total}</span> грн/день</div>
       </div>
     </div>
-    `
-    return menuCards.insertAdjacentHTML('afterbegin', card);
+    `;
+    // добавим родителя
+    this.parent.append(element);
+    // Как я самостоятельно решал, так уже не делают
+    // return menuCards.insertAdjacentHTML('afterbegin', card);
     }
 
 }
 // Создаем три карточки
-const fitness = new MenuItem("img/tabs/vegy.jpg", '"Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', '229');
+new MenuItem(
+  "img/tabs/vegy.jpg", 
+  '"Фитнес"', 
+  'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
+  '9',
+  '.menu .container'
+  ).render();
 
-const premium = new MenuItem("img/tabs/elite.jpg", '"Премиум"', 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты,  фрукты - ресторанное меню без похода в ресторан!', '550');
+new MenuItem(
+"img/tabs/elite.jpg", 
+'"Премиум"', 
+'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты,  фрукты - ресторанное меню без похода в ресторан!', 
+'20',
+'.menu .container'
+).render();
 
-const lean = new MenuItem("img/tabs/post.jpg", '"Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', '430');
+new MenuItem(
+  "img/tabs/post.jpg", 
+  '"Постное"', 
+  'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 
+  '17',
+  '.menu .container'
+  ).render();
 
-lean.generateCard();
-premium.generateCard();
-fitness.generateCard();
 
 });
