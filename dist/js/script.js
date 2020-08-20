@@ -134,7 +134,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const showModalByScroll = () => {
     if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
       openModal();
-      window.removeEventListener('scroll', showModalByScroll);
+      window.removeEventListener('scroll', showModalByScroll);  
     }
   }
 
@@ -163,5 +163,48 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Вызываем модальное окно если пользователь проскролил страницу до конца
   window.addEventListener('scroll', showModalByScroll);
+
+      // Задача: шаблонизировать карточки меню
+const menuItem = document.querySelector('.menu__item'),
+subtitle = document.querySelector('.menu__item-subtitle'),
+description = document.querySelector('.menu__item-descr'),
+img = document.querySelector('.menu__item-img'),
+total = document.querySelector('.menu__item-total');
+
+// Создаем класс для карточек
+class MenuItem {
+  constructor (subtitle, description, img, total) {
+      this.subtitle = subtitle,
+this.description = description,
+this.img = img,
+this.total = total
+    }
+
+    generateCard() {
+      return
+       `<div class="menu__item">
+      <img class="menu__item_img" src=${this.img} alt="" />
+      <h3 class="menu__item-subtitle">Меню ${this.subtitle}</h3>
+      <div class="menu__item-descr">
+      ${this.description}
+      </div>
+      <div class="menu__item-divider"></div>
+      <div class="menu__item-price">
+        <div class="menu__item-cost">Цена:</div>
+        <div class="menu__item-total"><span>${this.total}</span> грн/день</div>
+      </div>
+    </div>`
+    }
+}
+// Создаем три карточки
+const fitness = new MenuItem("img/tabs/vegy.jpg", '"Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', '229');
+
+const premium = new MenuItem("img/tabs/elite.jpg", '"Премиум"', 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты,  фрукты - ресторанное меню без похода в ресторан!', '550');
+
+const lean = new MenuItem("img/tabs/post.jpg", '"Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', '430');
+
+fitness.generateCard();
+premium.generateCard();
+lean.generateCard();
 
 });
