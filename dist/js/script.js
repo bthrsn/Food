@@ -168,12 +168,15 @@ window.addEventListener('DOMContentLoaded', () => {
 // const menuCards = document.querySelector('.menu_cards');
 
 // Создаем класс для карточек
+// В будущем мы не знаем сколько классов мы захотим изменить, потому добавляем rest оператор
 class MenuItem {
-  constructor(img, subtitle, description, total, parentSelector) {
+  constructor(img, subtitle, description, total, parentSelector, ...classes) {
 this.img = img;
 this.subtitle = subtitle;
 this.description = description;
 this.total = total;
+// classes будут массивом
+this.classes = classes;
 // передадим родителя, куда будем пушить элемент
 this.parent = document.querySelector(parentSelector);
 this.transfer = 27; 
@@ -187,8 +190,16 @@ changeToUAH() {
 
     render() {
       const element = document.createElement('div');
+      // Rest оператор не поддерживает параметр по умолчанию, потому делаем параметр по умолчанию через логическое выражение
+      if(this.classes.length === 0) {
+        this.element = 'menu__item';
+        element.classList.add(this.element);
+      } else {
+      // добавляем наш список классов к HTML разметке
+      this.classes.forEach(className => element.classList.add(className));
+      }
+
       element.innerHTML = `
-      <div class="menu__item">
       <img class="menu__item_img" src=${this.img} alt="${this.subtitle}" />
       <h3 class="menu__item-subtitle">Меню ${this.subtitle}</h3>
       <div class="menu__item-descr">
@@ -199,7 +210,6 @@ changeToUAH() {
         <div class="menu__item-cost">Цена:</div>
         <div class="menu__item-total"><span>${this.total}</span> грн/день</div>
       </div>
-    </div>
     `;
     // добавим родителя
     this.parent.append(element);
@@ -214,7 +224,7 @@ new MenuItem(
   '"Фитнес"', 
   'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
   '9',
-  '.menu .container'
+  '.menu .container',
   ).render();
 
 new MenuItem(
@@ -222,7 +232,7 @@ new MenuItem(
 '"Премиум"', 
 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты,  фрукты - ресторанное меню без похода в ресторан!', 
 '20',
-'.menu .container'
+'.menu .container',
 ).render();
 
 new MenuItem(
@@ -230,7 +240,7 @@ new MenuItem(
   '"Постное"', 
   'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 
   '17',
-  '.menu .container'
+  '.menu .container',
   ).render();
 
 
