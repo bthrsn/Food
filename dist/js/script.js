@@ -127,7 +127,7 @@ window.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
     // Если пользователь уже открыл окно, оно не будет открываться снова через указанное время
-    clearInterval(modalTimerId);
+    // clearInterval(modalTimerId);
   }
 
   // остановим показ модального окна после первой прокрутки
@@ -243,5 +243,70 @@ new MenuItem(
   '.menu .container',
   ).render();
 
+// Задача: все формы принимают данные и отправляют на сервер
+// выполним сначала с помощью XML 
+const forms = document.querySelectorAll('form');
 
+// создадим объект, в котором будут тексты сообщений
+const message = {
+  loading: 'Загрузка',
+  success: 'Спасибо! Мы скоро с вами свяжемся',
+  failure: 'Что-то пошло не так...' 
+}
+
+// Повязываем нашу функцию получения данных к формам
+forms.forEach(item => {
+  postData(item);
+})
+
+// функция получения данных из формы
+function postData(form) {
+  form.addEventListener('submit', (e) => {
+    // в первую очередь отменим перезагрузку старницы
+ e.preventDefault();
+
+//  блок с сообщением
+const statusMessage = document.createElement('div');
+statusMessage.classList.add('status');
+statusMessage.textContent = message.loading;
+// Пока наше сообщение существует только в HTML коде и его нужно добавить на страницу методом append к форме
+form.append(statusMessage);
+  
+  const request = new XMLHttpRequest();
+  request.open('POST', 'server.php');
+
+  // Если используем XML заголовок устанавливать не нужно
+  request.setRequestHeader('Content-type', 'application/json');
+  // сохраним данные с помощью FormData
+  const formData = new FormData(form);
+
+  // Прием для изменения формата передачи данных из XML в JSON - создаем новый объект и переберем старые данные в него
+const object = {};
+formData.forEach(function(value, key) {
+  object[key] = value;
+});
+// создаем переменную для наглядности перевода методом stringify, но можно и сразу
+const json = JSON.stringify(object);
+
+// Тогда сюда вместо formData помещаем object
+  // request.send(formData);
+  request.send(json);
+
+  request.addEventListener('load', () => {
+    if(request.status === 200) {
+      console.log(request.response);
+      statusMessage.textContent = message.success;
+      // очищаем форму после отправки
+      form.reset();
+      // Удаляем сообщение через некоторое время
+      setTimeout(() => {
+        statusMessage.remove();
+      }, 2000);
+
+    } else {
+      statusMessage.textContent = message.failure;
+    }
+  });
+  });
+}
 });
