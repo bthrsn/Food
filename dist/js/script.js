@@ -112,11 +112,10 @@ window.addEventListener('DOMContentLoaded', () => {
   // Задача, сделать модальное окно
   // Делаем через дата атрибуты
   const modal = document.querySelector('.modal'),
-    modalOpenBtn = document.querySelectorAll('[data-modal]'),
-    modalCloseBtn = document.querySelector('[data-close]');
+    modalOpenBtn = document.querySelectorAll('[data-modal]');
 
   // функция для закрытия окна, так как она повторяется, а нужно следовать DRY = dont repeat yorself
-  const closeModal = () => {
+  function closeModal() {
     modal.classList.add('hide');
     modal.classList.remove('show');
     document.body.style.overflow = ''
@@ -127,7 +126,7 @@ window.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
     // Если пользователь уже открыл окно, оно не будет открываться снова через указанное время
-    // clearInterval(modalTimerId);
+    clearInterval(modalTimerId);
   }
 
   // остановим показ модального окна после первой прокрутки
@@ -142,11 +141,9 @@ window.addEventListener('DOMContentLoaded', () => {
     item.addEventListener('click', openModal);
   });
 
-  modalCloseBtn.addEventListener('click', closeModal);
-
   // Если кликаем вне окна - оно закрывается
   modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
+    if (e.target === modal || e.target.getAttribute('data-close') == '') {
       closeModal();
     }
   });
@@ -159,7 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // Вызываем модальное окно через некоторое время
-  // const modalTimerId = setTimeout(openModal, 5000);
+  const modalTimerId = setTimeout(openModal, 50000);
 
   // Вызываем модальное окно если пользователь проскролил страницу до конца
   window.addEventListener('scroll', showModalByScroll);
@@ -213,7 +210,7 @@ changeToUAH() {
     `;
     // добавим родителя
     this.parent.append(element);
-    // Как я самостоятельно решал, так уже не делают
+    // Как я самостоятельно решал, это более гибкий метод!
     // return menuCards.insertAdjacentHTML('afterbegin', card);
     }
 
@@ -249,7 +246,7 @@ const forms = document.querySelectorAll('form');
 
 // создадим объект, в котором будут тексты сообщений
 const message = {
-  loading: 'Загрузка',
+  loading: 'img/form/spinner.svg',
   success: 'Спасибо! Мы скоро с вами свяжемся',
   failure: 'Что-то пошло не так...' 
 }
@@ -266,12 +263,18 @@ function postData(form) {
  e.preventDefault();
 
 //  блок с сообщением
-const statusMessage = document.createElement('div');
-statusMessage.classList.add('status');
-statusMessage.textContent = message.loading;
+const statusMessage = document.createElement('img');
+statusMessage.src = message.loading;
+statusMessage.style.cssText = `
+    display: block;
+    margin: 0 auto;
+    `;
 // Пока наше сообщение существует только в HTML коде и его нужно добавить на страницу методом append к форме
-form.append(statusMessage);
-  
+// form.append(statusMessage);
+
+// Так как формы разные, делаем так, чтобы спиннер одинаково хорошо отображалмся
+form.insertAdjacentElement('afterend', statusMessage);
+   
   const request = new XMLHttpRequest();
   request.open('POST', 'server.php');
 
@@ -295,18 +298,42 @@ const json = JSON.stringify(object);
   request.addEventListener('load', () => {
     if(request.status === 200) {
       console.log(request.response);
-      statusMessage.textContent = message.success;
+      showThanksModal(message.success);
       // очищаем форму после отправки
-      form.reset();
-      // Удаляем сообщение через некоторое время
-      setTimeout(() => {
+        form.reset();
         statusMessage.remove();
-      }, 2000);
-
     } else {
-      statusMessage.textContent = message.failure;
-    }
+      showThanksModal(message.failure);    }
   });
   });
 }
+
+//  Делаем окно с красивым оповещением пользователя с помощью старого модального окна
+function showThanksModal(message) {
+  const prevModalDialog = document.querySelector('.modal__dialog');
+// Сперва спрячем это окно
+  prevModalDialog.classList.add('hide');
+  openModal();
+
+  // Создадим новое окно с помощью js
+  const thanksModal = document.createElement('div');
+  thanksModal.classList.add('modal__dialog');
+  thanksModal.innerHTML = `
+  <div class='modal__content'>
+    <div class='modal__close' data-close>×</div>
+    <div class='modal__title'>${message}</div>
+  </div>
+  `;
+
+  document.querySelector('.modal').append(thanksModal);
+  
+  // Сделаем временной интервал на показ окна
+  setTimeout(() => {
+    thanksModal.remove();
+    prevModalDialog.classList.add('show');
+    prevModalDialog.classList.remove('hide');
+    closeModal();
+    }, 4000);
+}
+
 });
