@@ -166,174 +166,203 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Создаем класс для карточек
 // В будущем мы не знаем сколько классов мы захотим изменить, потому добавляем rest оператор
-class MenuItem {
-  constructor(img, subtitle, description, total, parentSelector, ...classes) {
-this.img = img;
-this.subtitle = subtitle;
-this.description = description;
-this.total = total;
-// classes будут массивом
-this.classes = classes;
-// передадим родителя, куда будем пушить элемент
-this.parent = document.querySelector(parentSelector);
-this.transfer = 27; 
-this.changeToUAH();
-}
-
-// метод для конвертации из долларов в гривны
-changeToUAH() {
-  this.total = this.total * this.transfer;
-}
-
-    render() {
-      const element = document.createElement('div');
-      // Rest оператор не поддерживает параметр по умолчанию, потому делаем параметр по умолчанию через логическое выражение
-      if(this.classes.length === 0) {
-        this.element = 'menu__item';
-        element.classList.add(this.element);
-      } else {
-      // добавляем наш список классов к HTML разметке
-      this.classes.forEach(className => element.classList.add(className));
-      }
-
-      element.innerHTML = `
-      <img class="menu__item_img" src=${this.img} alt="${this.subtitle}" />
-      <h3 class="menu__item-subtitle">Меню ${this.subtitle}</h3>
-      <div class="menu__item-descr">
-      ${this.description}
-      </div>
-      <div class="menu__item-divider"></div>
-      <div class="menu__item-price">
-        <div class="menu__item-cost">Цена:</div>
-        <div class="menu__item-total"><span>${this.total}</span> грн/день</div>
-      </div>
-    `;
-    // добавим родителя
-    this.parent.append(element);
-    // Как я самостоятельно решал, это более гибкий метод!
-    // return menuCards.insertAdjacentHTML('afterbegin', card);
+    class MenuItem {
+      constructor(img, subtitle, description, total, parentSelector, ...classes) {
+    this.img = img;
+    this.subtitle = subtitle;
+    this.description = description;
+    this.total = total;
+    // classes будут массивом
+    this.classes = classes;
+    // передадим родителя, куда будем пушить элемент
+    this.parent = document.querySelector(parentSelector);
+    this.transfer = 27; 
+    this.changeToUAH();
     }
 
-}
+  // метод для конвертации из долларов в гривны
+    changeToUAH() {
+      this.total = this.total * this.transfer;
+    }
+
+      render() {
+        const element = document.createElement('div');
+        // Rest оператор не поддерживает параметр по умолчанию, потому делаем параметр по умолчанию через логическое выражение
+        if(this.classes.length === 0) {
+          this.element = 'menu__item';
+          element.classList.add(this.element);
+        } else {
+        // добавляем наш список классов к HTML разметке
+        this.classes.forEach(className => element.classList.add(className));
+        }
+
+        element.innerHTML = `
+        <img class="menu__item_img" src=${this.img} alt="${this.subtitle}" />
+        <h3 class="menu__item-subtitle">Меню ${this.subtitle}</h3>
+        <div class="menu__item-descr">
+        ${this.description}
+        </div>
+        <div class="menu__item-divider"></div>
+        <div class="menu__item-price">
+          <div class="menu__item-cost">Цена:</div>
+          <div class="menu__item-total"><span>${this.total}</span> грн/день</div>
+        </div>
+      `;
+      // добавим родителя
+      this.parent.append(element);
+      // Как я самостоятельно решал, это более гибкий метод!
+      // return menuCards.insertAdjacentHTML('afterbegin', card);
+      }
+
+  }
 // Создаем три карточки
-new MenuItem(
-  "img/tabs/vegy.jpg", 
-  '"Фитнес"', 
-  'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
-  '9',
+  new MenuItem(
+    "img/tabs/vegy.jpg", 
+    '"Фитнес"', 
+    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
+    '9',
+    '.menu .container',
+  ).render();
+
+  new MenuItem(
+  "img/tabs/elite.jpg", 
+  '"Премиум"', 
+  'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты,  фрукты - ресторанное меню без похода в ресторан!', 
+  '20',
   '.menu .container',
   ).render();
 
-new MenuItem(
-"img/tabs/elite.jpg", 
-'"Премиум"', 
-'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты,  фрукты - ресторанное меню без похода в ресторан!', 
-'20',
-'.menu .container',
-).render();
-
-new MenuItem(
-  "img/tabs/post.jpg", 
-  '"Постное"', 
-  'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 
-  '17',
-  '.menu .container',
+  new MenuItem(
+    "img/tabs/post.jpg", 
+    '"Постное"', 
+    'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 
+    '17',
+    '.menu .container',
   ).render();
 
 // Задача: все формы принимают данные и отправляют на сервер
 // выполним сначала с помощью XML 
-const forms = document.querySelectorAll('form');
+  const forms = document.querySelectorAll('form');
 
 // создадим объект, в котором будут тексты сообщений
-const message = {
-  loading: 'img/form/spinner.svg',
-  success: 'Спасибо! Мы скоро с вами свяжемся',
-  failure: 'Что-то пошло не так...' 
-}
+  const message = {
+    loading: 'img/form/spinner.svg',
+    success: 'Спасибо! Мы скоро с вами свяжемся',
+    failure: 'Что-то пошло не так...' 
+  }
 
 // Повязываем нашу функцию получения данных к формам
-forms.forEach(item => {
-  postData(item);
-})
+  forms.forEach(item => {
+    postData(item);
+  })
 
 // функция получения данных из формы
-function postData(form) {
-  form.addEventListener('submit', (e) => {
-    // в первую очередь отменим перезагрузку старницы
- e.preventDefault();
+    function postData(form) {
+      form.addEventListener('submit', (e) => {
+        // в первую очередь отменим перезагрузку старницы
+      e.preventDefault();
 
-//  блок с сообщением
-const statusMessage = document.createElement('img');
-statusMessage.src = message.loading;
-statusMessage.style.cssText = `
-    display: block;
-    margin: 0 auto;
-    `;
-// Пока наше сообщение существует только в HTML коде и его нужно добавить на страницу методом append к форме
-// form.append(statusMessage);
+    //  блок с сообщением
+      const statusMessage = document.createElement('img');
+      statusMessage.src = message.loading;
+      statusMessage.style.cssText = `
+          display: block;
+          margin: 0 auto;
+          `;
+    // Пока наше сообщение существует только в HTML коде и его нужно добавить на страницу методом append к форме
+    // form.append(statusMessage);
 
-// Так как формы разные, делаем так, чтобы спиннер одинаково хорошо отображалмся
-form.insertAdjacentElement('afterend', statusMessage);
-   
-  const request = new XMLHttpRequest();
-  request.open('POST', 'server.php');
+    // Так как формы разные, делаем так, чтобы спиннер одинаково хорошо отображалмся
+      form.insertAdjacentElement('afterend', statusMessage);
+      
+      // const request = new XMLHttpRequest();
+      // request.open('POST', 'server.php');
 
-  // Если используем XML заголовок устанавливать не нужно
-  request.setRequestHeader('Content-type', 'application/json');
-  // сохраним данные с помощью FormData
-  const formData = new FormData(form);
+      // сохраним данные с помощью FormData
+      const formData = new FormData(form);
 
-  // Прием для изменения формата передачи данных из XML в JSON - создаем новый объект и переберем старые данные в него
-const object = {};
-formData.forEach(function(value, key) {
-  object[key] = value;
-});
-// создаем переменную для наглядности перевода методом stringify, но можно и сразу
-const json = JSON.stringify(object);
+      // Прием для изменения формата передачи данных из XML в JSON - создаем новый объект и переберем старые данные в него
+      const object = {};
+        formData.forEach(function(value, key) {
+          object[key] = value;
+        });
 
-// Тогда сюда вместо formData помещаем object
-  // request.send(formData);
-  request.send(json);
+    // Тогда сюда вместо formData помещаем object
+      // request.send(formData);
+      // request.send(json);
 
-  request.addEventListener('load', () => {
-    if(request.status === 200) {
-      console.log(request.response);
-      showThanksModal(message.success);
-      // очищаем форму после отправки
-        form.reset();
+      // Делаем запрос с помощью fetch
+      fetch('server.php', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(object)
+            // Обрабатываем результат запроса с помощью then
+      })
+      .then(data => data.text())
+      .then(data => {
+        // заменили request.remove на data - это те данные, которые нам вернул сервер
+        console.log(data);
+        showThanksModal(message.success);
         statusMessage.remove();
-    } else {
-      showThanksModal(message.failure);    }
-  });
-  });
-}
+      }).catch(() => {
+        showThanksModal(message.failure);  
+      }).finally(() => {
+        form.reset(); 
+      });
 
-//  Делаем окно с красивым оповещением пользователя с помощью старого модального окна
-function showThanksModal(message) {
-  const prevModalDialog = document.querySelector('.modal__dialog');
-// Сперва спрячем это окно
-  prevModalDialog.classList.add('hide');
-  openModal();
+      // request.addEventListener('load', () => {
+      //   if(request.status === 200) {
+      //     console.log(request.response);
+      //     showThanksModal(message.success);
+      //     // очищаем форму после отправки
+      //       form.reset();
+      //       statusMessage.remove();
+      //   } else {
+      //     showThanksModal(message.failure);    }
+      // });
+    });
 
-  // Создадим новое окно с помощью js
-  const thanksModal = document.createElement('div');
-  thanksModal.classList.add('modal__dialog');
-  thanksModal.innerHTML = `
-  <div class='modal__content'>
-    <div class='modal__close' data-close>×</div>
-    <div class='modal__title'>${message}</div>
-  </div>
-  `;
+  //  Делаем окно с красивым оповещением пользователя с помощью старого модального окна
+    function showThanksModal(message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+    // Сперва спрячем это окно
+      prevModalDialog.classList.add('hide');
+      openModal();
 
-  document.querySelector('.modal').append(thanksModal);
-  
-  // Сделаем временной интервал на показ окна
-  setTimeout(() => {
-    thanksModal.remove();
-    prevModalDialog.classList.add('show');
-    prevModalDialog.classList.remove('hide');
-    closeModal();
-    }, 4000);
-}
+      // Создадим новое окно с помощью js
+      const thanksModal = document.createElement('div');
+      thanksModal.classList.add('modal__dialog');
+      thanksModal.innerHTML = `
+      <div class='modal__content'>
+        <div class='modal__close' data-close>×</div>
+        <div class='modal__title'>${message}</div>
+      </div>
+      `;
 
+      document.querySelector('.modal').append(thanksModal);
+      
+      // Сделаем временной интервал на показ окна
+      setTimeout(() => {
+        thanksModal.remove();
+        prevModalDialog.classList.add('show');
+        prevModalDialog.classList.remove('hide');
+        closeModal();
+        }, 4000);
+    }
+
+  // разбираем fetch API
+  // скопировано с jsonplaceholder.com - обращаемся к первой тудушке
+    // fetch('https://jsonplaceholder.typicode.com/posts', {
+    //   method: 'POST',
+    //   body: JSON.stringify({name: 'Alex'}),
+      // всегда желательно указывать заголовки, чтобы понимать какой тип данных мы отправляем
+    //   headers: {
+    //     'Content-type': 'application/json'
+    //   }
+    // })
+    //   .then(response => response.json())
+    //   .then(json => console.log(json));
+  }
 });
