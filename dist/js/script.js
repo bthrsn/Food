@@ -253,11 +253,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Повязываем нашу функцию получения данных к формам
   forms.forEach(item => {
-    postData(item);
+    bindPostData(item);
   })
 
+  // функция для работы с сервером 
+  // Нужно указать. что это асинхронный код (async), чтобы не было ошибки, так как мы не знаем точное время, когда нам вернуться данные с promise
+  const postData = async (url, data) => {
+    // ставим await перед теми данными, которых нам нужно дождаться
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: data
+    });
+// здесь тоже нужен await
+    return await res.json();
+  }
+
 // функция получения данных из формы
-    function postData(form) {
+    function bindPostData(form) {
       form.addEventListener('submit', (e) => {
         // в первую очередь отменим перезагрузку старницы
       e.preventDefault();
@@ -298,8 +313,8 @@ window.addEventListener('DOMContentLoaded', () => {
           'Content-type': 'application/json'
         },
         body: JSON.stringify(object)
-            // Обрабатываем результат запроса с помощью then
       })
+      // Обрабатываем результат запроса с помощью then
       .then(data => data.text())
       .then(data => {
         // заменили request.remove на data - это те данные, которые нам вернул сервер
