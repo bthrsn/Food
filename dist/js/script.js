@@ -166,79 +166,104 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Создаем класс для карточек
 // В будущем мы не знаем сколько классов мы захотим изменить, потому добавляем rest оператор
-    class MenuItem {
-      constructor(img, subtitle, description, total, parentSelector, ...classes) {
-    this.img = img;
-    this.subtitle = subtitle;
-    this.description = description;
-    this.total = total;
-    // classes будут массивом
-    this.classes = classes;
-    // передадим родителя, куда будем пушить элемент
-    this.parent = document.querySelector(parentSelector);
-    this.transfer = 27; 
-    this.changeToUAH();
+  //   class MenuItem {
+  //     constructor(img, altimg, title, descr, price, parentSelector, ...classes) {
+  //   this.img = img;
+  //   this.altimg = altimg;
+  //   this.title = title;
+  //   this.descr = descr;
+  //   this.price = price;
+  //   // classes будут массивом
+  //   this.classes = classes;
+  //   // передадим родителя, куда будем пушить элемент
+  //   this.parent = document.querySelector(parentSelector);
+  //   this.transfer = 27; 
+  //   this.changeToUAH();
+  //   }
+
+  // // метод для конвертации из долларов в гривны
+  //   changeToUAH() {
+  //     this.price = this.price * this.transfer;
+  //   }
+
+  //     render() {
+  //       const element = document.createElement('div');
+  //       // Rest оператор не поддерживает параметр по умолчанию, потому делаем параметр по умолчанию через логическое выражение
+  //       if(this.classes.length === 0) {
+  //         this.element = 'menu__item';
+  //         element.classList.add(this.element);
+  //       } else {
+  //       // добавляем наш список классов к HTML разметке
+  //       this.classes.forEach(className => element.classList.add(className));
+  //       }
+
+  //       element.innerHTML = `
+  //       <img class="menu__item_img" src=${this.img} alt="${this.altimg}" />
+  //       <h3 class="menu__item-subtitle">Меню ${this.title}</h3>
+  //       <div class="menu__item-descr">
+  //       ${this.descr}
+  //       </div>
+  //       <div class="menu__item-divider"></div>
+  //       <div class="menu__item-price">
+  //         <div class="menu__item-cost">Цена:</div>
+  //         <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+  //       </div>
+  //     `;
+  //     // добавим родителя
+  //     this.parent.append(element);
+  //     // Как я самостоятельно решал, это более гибкий метод!
+  //     // return menuCards.insertAdjacentHTML('afterbegin', card);
+  //     }
+  // }
+
+  // Получаем информацию для карточек с сервера с помощью get запроса
+  const getResource = async (url) => {
+    const res = await fetch(url);
+
+    // Так как 404 или 500 не повлекут за собо ошибки, этот момент отрабтаем вручную с помощью свойств .ok и status
+    if (!res.ok) {
+        throw new Error(`Couldn't fetch ${url}, status: ${res.status}`)
     }
+    return await res.json();
+  };
 
-  // метод для конвертации из долларов в гривны
-    changeToUAH() {
-      this.total = this.total * this.transfer;
-    }
+  // Способ формирования верстки с помощью класов
+  // getResource('http://localhost:3000/menu')
+  //   .then(data => {
+  //     data.forEach(({img, altimg, title, descr, price}) => {
+  //       new MenuItem(img, altimg, title, descr, price, '.menu .container').render();
+  //     });
+  //   });
 
-      render() {
-        const element = document.createElement('div');
-        // Rest оператор не поддерживает параметр по умолчанию, потому делаем параметр по умолчанию через логическое выражение
-        if(this.classes.length === 0) {
-          this.element = 'menu__item';
-          element.classList.add(this.element);
-        } else {
-        // добавляем наш список классов к HTML разметке
-        this.classes.forEach(className => element.classList.add(className));
-        }
+  // Способ формирования верстки без классов - на лету. Он исполльзуется, когда такую верстку нужно построить только раз и не нужен шаблонизатор.
+  getResource('http://localhost:3000/menu')
+    .then(data => createCard(data));
 
-        element.innerHTML = `
-        <img class="menu__item_img" src=${this.img} alt="${this.subtitle}" />
-        <h3 class="menu__item-subtitle">Меню ${this.subtitle}</h3>
-        <div class="menu__item-descr">
-        ${this.description}
-        </div>
-        <div class="menu__item-divider"></div>
-        <div class="menu__item-price">
-          <div class="menu__item-cost">Цена:</div>
-          <div class="menu__item-total"><span>${this.total}</span> грн/день</div>
-        </div>
-      `;
-      // добавим родителя
-      this.parent.append(element);
-      // Как я самостоятельно решал, это более гибкий метод!
-      // return menuCards.insertAdjacentHTML('afterbegin', card);
-      }
+      function createCard(data) {
+        data.forEach(({img, altimg, title, descr, price}) => {
+          const element = document.createElement('div');
+          // курс гривны к доллару
+          const transfer = 27;
 
-  }
-// Создаем три карточки
-  new MenuItem(
-    "img/tabs/vegy.jpg", 
-    '"Фитнес"', 
-    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
-    '9',
-    '.menu .container',
-  ).render();
+          element.classList.add('menu__item');
 
-  new MenuItem(
-  "img/tabs/elite.jpg", 
-  '"Премиум"', 
-  'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты,  фрукты - ресторанное меню без похода в ресторан!', 
-  '20',
-  '.menu .container',
-  ).render();
+          element.innerHTML = `
+          <img class="menu__item_img" src=${img} alt="${altimg}" />
+          <h3 class="menu__item-subtitle">Меню ${title}</h3>
+          <div class="menu__item-descr">
+          ${descr}
+          </div>
+          <div class="menu__item-divider"></div>
+          <div class="menu__item-price">
+            <div class="menu__item-cost">Цена:</div>
+            <div class="menu__item-total"><span>${price * transfer}</span> грн/день</div>
+          </div>
+          `;
 
-  new MenuItem(
-    "img/tabs/post.jpg", 
-    '"Постное"', 
-    'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 
-    '17',
-    '.menu .container',
-  ).render();
+          document.querySelector('.menu .container').append(element);
+        });
+      };
+
 
 // Задача: все формы принимают данные и отправляют на сервер
 // выполним сначала с помощью XML 
@@ -267,9 +292,9 @@ window.addEventListener('DOMContentLoaded', () => {
       },
       body: data
     });
-// здесь тоже нужен await
+// здесь тоже нужен await, так как тут тоже promise
     return await res.json();
-  }
+  };
 
 // функция получения данных из формы
     function bindPostData(form) {
@@ -297,25 +322,25 @@ window.addEventListener('DOMContentLoaded', () => {
       const formData = new FormData(form);
 
       // Прием для изменения формата передачи данных из XML в JSON - создаем новый объект и переберем старые данные в него
-      const object = {};
-        formData.forEach(function(value, key) {
-          object[key] = value;
-        });
+      // const object = {};
+      //   formData.forEach(function(value, key) {
+      //     object[key] = value;
+      //   });
+
+      // Изменим код выше с помощью новых методов
+      const json = JSON.stringify(Object.fromEntries(formData.entries()));
+
+      // Пример метода entries, превращая объект в массив массивов - матрицу
+      // const obj = {a: 23, b: 50};
+      // console.log(Object.entries(obj));
 
     // Тогда сюда вместо formData помещаем object
       // request.send(formData);
       // request.send(json);
 
-      // Делаем запрос с помощью fetch
-      fetch('server.php', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(object)
-      })
+      // Функция работы с сервером
+      postData('http://localhost:3000/requests', json)
       // Обрабатываем результат запроса с помощью then
-      .then(data => data.text())
       .then(data => {
         // заменили request.remove на data - это те данные, которые нам вернул сервер
         console.log(data);
@@ -382,7 +407,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // получим доступ к базе данных db.json
-  fetch('http://localhost:3000/menu')
-    .then(data => data.json())
-    .then(res => console.log(res));
+  // fetch('http://localhost:3000/menu')
+  //   .then(data => data.json())
+  //   .then(res => console.log(res));
 });
