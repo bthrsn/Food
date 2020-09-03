@@ -466,7 +466,6 @@ let current = document.querySelector('#current'),
       currentSlide++;
     }
     showSlide(currentSlide);
-    console.log(currentSlide);
   };
 
   const moveLeft = () => {
@@ -477,7 +476,6 @@ let current = document.querySelector('#current'),
       currentSlide--;
     }
     showSlide(currentSlide);
-    console.log(currentSlide);
   }
   // Навешиваем обработчик события клика на каждую стрелку
   next.addEventListener('click', moveRight);
