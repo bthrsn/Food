@@ -425,63 +425,51 @@ const menuCards = document.querySelector('.menu_cards');
   // 1. получить элементы со страницы, 
 const slides = document.querySelectorAll('.offer__slide'),
       prev = document.querySelector('.offer__slider-prev'),
-      next = document.querySelector('.offer__slider-next');
-
-let current = document.querySelector('#current'),
-    total = document.querySelector('#total');
+      next = document.querySelector('.offer__slider-next'),
+      current = document.querySelector('#current'),
+      total = document.querySelector('#total');
 
   // 2. сделать индекс текущего слайда и получить общее количество слайдов
-  let currentSlide = 0;
-  const totalSlide = slides.length;
+  let currentSlide = 1;
 
-    // 3. Функции показа слайда и функция сокрытия остальных, и проверять условие перехода с первого на последний и наоборот
-  function  showSlide(item) {
-    slides[item].classList.remove('hide');
+  // Вызов функции показа слайдов перед ее объеявлением
+  showSlides(currentSlide);
 
-    if (totalSlide < 10) {
-      total.innerHTML = `0${totalSlide}`;
-    } else {
-      total.innerHTML = `${totalSlide}`;
-    }
-
-    if (currentSlide < 10) {
-      current.innerHTML = `0${currentSlide + 1}`;
-    } else {
-      current.innerHTML = `${currentSlide + 1}`;
-    }
+  // 4. Отдельно вынесено получение общего количества слайдов в документе. чтобы сделать это один раз, а не каждый раз, когда вызываем функцию
+  if (slides.length < 10) {
+    total.textContent = `0${slides.length}`;
+  } else {
+    total.textContent = slides.length;
   }
 
-  function hideSlide() {
-    slides.forEach(item =>{
-      item.classList.add('hide');
-    });
-  };
+  // 3. Функции показа слайда и сокрытия остальных, и проверять условие перехода с первого на последний и наоборот
+  function showSlides(item) {
 
-  // функции для стрелок
-  const moveRight = () =>  {
-    hideSlide();
-    if (currentSlide >= totalSlide - 1) {
-      currentSlide = 0;
-    } else {
-      currentSlide++;
-    }
-    showSlide(currentSlide);
-  };
-
-  const moveLeft = () => {
-    hideSlide();
-    if (currentSlide <= 0) {
-      currentSlide = totalSlide - 1;
-    } else {
-      currentSlide--;
-    }
-    showSlide(currentSlide);
+  // проверка переключения с первого на последний и наоборот
+  if (item > slides.length) {
+    currentSlide = 1;
   }
-  // Навешиваем обработчик события клика на каждую стрелку
-  next.addEventListener('click', moveRight);
-  prev.addEventListener('click', moveLeft);
+  if(item < 1) {
+    currentSlide = slides.length
+  }
 
-  // 4. При запуске страницы - определять сколько сладйдов всего и транслировать на страницу общее количество и текущий слайд
-    hideSlide();
-    showSlide(currentSlide);
+  slides.forEach(item => item.classList.add('hide'));
+  slides[currentSlide - 1].classList.remove('hide');
+
+  // Текст в переключателе слайда 
+  if (currentSlide < 10) {
+    current.textContent = `0${currentSlide}`;
+  } else {
+    current.textContent = currentSlide;
+  }
+  }
+
+  // Функция для стрелок
+  function plusSlides(n) {
+    showSlides(currentSlide += n);
+  }
+  // Навешиваем обработчик события клика на каждую стрелку, работает только с колбэк функцией (ошибся сначала)
+  next.addEventListener('click', () => plusSlides(1));
+  prev.addEventListener('click', () => plusSlides(-1));
+
 });
