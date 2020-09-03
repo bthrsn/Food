@@ -419,57 +419,140 @@ const menuCards = document.querySelector('.menu_cards');
   //   .then(data => data.json())
   //   .then(res => console.log(res));
 
-  // Задача: реализовать слайдер
-  // Алгоритм: 
+  // Задача: реализовать слайдер, алгоритм в комментариях к коду
 
   // 1. получить элементы со страницы, 
 const slides = document.querySelectorAll('.offer__slide'),
       prev = document.querySelector('.offer__slider-prev'),
       next = document.querySelector('.offer__slider-next'),
       current = document.querySelector('#current'),
-      total = document.querySelector('#total');
+      total = document.querySelector('#total'),
+      // Тут элементы для карусели
+      slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+      slidesField = document.querySelector('.offer__slider-inner'), 
+      width = window.getComputedStyle(slidesWrapper).width;
 
   // 2. сделать индекс текущего слайда и получить общее количество слайдов
   let currentSlide = 1;
 
-  // Вызов функции показа слайдов перед ее объеявлением
-  showSlides(currentSlide);
+  // Для счетчика возьмем функционал из предыдущего слайдера? но дополним, так как функции showSlides нет
+    if (slides.length < 10) {
+      total.textContent = `0${slides.length}`;
+      current.textContent = `0${currentSlide}`
+    } else {
+      total.textContent = slides.length;
+      current.textContent = currentSlide;
+    }
 
-  // 4. Отдельно вынесено получение общего количества слайдов в документе. чтобы сделать это один раз, а не каждый раз, когда вызываем функцию
-  if (slides.length < 10) {
-    total.textContent = `0${slides.length}`;
-  } else {
-    total.textContent = slides.length;
-  }
+  // Перерменная-ориентрир, чтобы знать насколько мы отступили вправо или влево
+  let offset = 0;
+  
+  // Назначаем ширину поля для слайдера карусели в css
+  slidesField.style.width = 100 * slides.length +'%';
 
-  // 3. Функции показа слайда и сокрытия остальных, и проверять условие перехода с первого на последний и наоборот
-  function showSlides(item) {
+  // Уберем слайды вправо с помощью свойств flex и transition
+  slidesField.style.display = 'flex';
+  slidesField.style.transition = '0.5s all';
 
-  // проверка переключения с первого на последний и наоборот
-  if (item > slides.length) {
-    currentSlide = 1;
-  }
-  if(item < 1) {
-    currentSlide = slides.length
-  }
+  // скрываем элементы не в области видимости
+  slidesWrapper.style.overflow = 'hidden';
 
-  slides.forEach(item => item.classList.add('hide'));
-  slides[currentSlide - 1].classList.remove('hide');
+  // Убедимся, что все слайды равны по ширине
+  slides.forEach(slide => {
+    slide.style.width = width;
+  })
 
-  // Текст в переключателе слайда 
-  if (currentSlide < 10) {
-    current.textContent = `0${currentSlide}`;
-  } else {
-    current.textContent = currentSlide;
-  }
-  }
+  // Обработчики событий
+  next.addEventListener('click', () => {
+    // Условие для возвращения слайдера в начальную позицию
+    if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)){
+      offset = 0;
+    } else {
+      offset += +width.slice(0, width.length - 2);
+    }
+    // Двигаем слайдер
+    slidesField.style.transform = `translateX(-${offset}px)`;
 
-  // Функция для стрелок
-  function plusSlides(n) {
-    showSlides(currentSlide += n);
-  }
-  // Навешиваем обработчик события клика на каждую стрелку, работает только с колбэк функцией (ошибся сначала)
-  next.addEventListener('click', () => plusSlides(1));
-  prev.addEventListener('click', () => plusSlides(-1));
+    // Условие переключения счетчика при переключении слайдов
+    if (currentSlide == slides.length) {
+      currentSlide = 1
+    } else {
+      currentSlide++;
+    }
+
+    // Условие для 0 перед счетчиком меньше 10
+    if (slides.length < 10) {
+      current.textContent = `0${currentSlide}`
+    } else {
+      current.textContent = currentSlide;
+    }
+  });
+
+  prev.addEventListener('click', () => {
+    // Условие для возвращения слайдера в начальную позицию
+    if (offset == 0){
+      offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+    } else {
+      offset -= +width.slice(0, width.length - 2);
+    }
+    // Двигаем слайдер
+    slidesField.style.transform = `translateX(-${offset}px)`
+
+    // Условие переключения счетчика при переключении слайдов
+    if (currentSlide == 1) {
+      currentSlide = slides.length;
+    } else {
+      currentSlide--;
+    }
+
+    // Условие для 0 перед счетчиком меньше 10
+    if (slides.length < 10) {
+      current.textContent = `0${currentSlide}`
+    } else {
+      current.textContent = currentSlide;
+        }
+  });
+  // // Вызов функции показа слайдов перед ее объеявлением
+  // showSlides(currentSlide);
+
+  // // 4. Отдельно вынесено получение общего количества слайдов в документе. чтобы сделать это один раз, а не каждый раз, когда вызываем функцию
+  // if (slides.length < 10) {
+  //   total.textContent = `0${slides.length}`;
+  // } else {
+  //   total.textContent = slides.length;
+  // }
+
+  // // 3. Функции показа слайда и сокрытия остальных, и проверять условие перехода с первого на последний и наоборот
+  // function showSlides(item) {
+
+  // // проверка переключения с первого на последний и наоборот
+  // if (item > slides.length) {
+  //   currentSlide = 1;
+  // }
+  // if(item < 1) {
+  //   currentSlide = slides.length
+  // }
+
+  // slides.forEach(item => item.classList.add('hide'));
+  // slides[currentSlide - 1].classList.remove('hide');
+
+  // // Текст в переключателе слайда 
+  // if (currentSlide < 10) {
+  //   current.textContent = `0${currentSlide}`;
+  // } else {
+  //   current.textContent = currentSlide;
+  // }
+  // }
+
+  // // Функция для стрелок
+  // function plusSlides(n) {
+  //   showSlides(currentSlide += n);
+  // }
+  // // Навешиваем обработчик события клика на каждую стрелку, работает только с колбэк функцией (ошибся сначала)
+  // next.addEventListener('click', () => plusSlides(1));
+  // prev.addEventListener('click', () => plusSlides(-1));
+
+  // Делаем слайдер карусель
+
 
 });
