@@ -275,7 +275,7 @@ const menuCards = document.querySelector('.menu_cards');
 
 // Задача: все формы принимают данные и отправляют на сервер
 // выполним сначала с помощью XML 
-  const forms = document.querySelectorAll('form');
+  // const forms = document.querySelectorAll('form');
 
 // создадим объект, в котором будут тексты сообщений
   const message = {
@@ -285,9 +285,9 @@ const menuCards = document.querySelector('.menu_cards');
   }
 
 // Повязываем нашу функцию получения данных к формам
-  forms.forEach(item => {
-    bindPostData(item);
-  })
+  // forms.forEach(item => {
+  //   bindPostData(item);
+  // })
 
   // функция для работы с сервером 
   // Нужно указать. что это асинхронный код (async), чтобы не было ошибки, так как мы не знаем точное время, когда нам вернуться данные с promise
@@ -418,4 +418,72 @@ const menuCards = document.querySelector('.menu_cards');
   // fetch('http://localhost:3000/menu')
   //   .then(data => data.json())
   //   .then(res => console.log(res));
+
+  // Задача: реализовать слайдер
+  // Алгоритм: 
+
+  // 1. получить элементы со страницы, 
+const slides = document.querySelectorAll('.offer__slide'),
+      prev = document.querySelector('.offer__slider-prev'),
+      next = document.querySelector('.offer__slider-next');
+
+let current = document.querySelector('#current'),
+    total = document.querySelector('#total');
+
+  // 2. сделать индекс текущего слайда и получить общее количество слайдов
+  let currentSlide = 0;
+  const totalSlide = slides.length;
+
+    // 3. Функции показа слайда и функция сокрытия остальных, и проверять условие перехода с первого на последний и наоборот
+  function  showSlide(item) {
+    slides[item].classList.remove('hide');
+
+    if (totalSlide < 10) {
+      total.innerHTML = `0${totalSlide}`;
+    } else {
+      total.innerHTML = `${totalSlide}`;
+    }
+
+    if (currentSlide < 10) {
+      current.innerHTML = `0${currentSlide + 1}`;
+    } else {
+      current.innerHTML = `${currentSlide + 1}`;
+    }
+  }
+
+  function hideSlide() {
+    slides.forEach(item =>{
+      item.classList.add('hide');
+    });
+  };
+
+  // функции для стрелок
+  const moveRight = () =>  {
+    hideSlide();
+    if (currentSlide >= totalSlide - 1) {
+      currentSlide = 0;
+    } else {
+      currentSlide++;
+    }
+    showSlide(currentSlide);
+    console.log(currentSlide);
+  };
+
+  const moveLeft = () => {
+    hideSlide();
+    if (currentSlide <= 0) {
+      currentSlide = totalSlide - 1;
+    } else {
+      currentSlide--;
+    }
+    showSlide(currentSlide);
+    console.log(currentSlide);
+  }
+  // Навешиваем обработчик события клика на каждую стрелку
+  next.addEventListener('click', moveRight);
+  prev.addEventListener('click', moveLeft);
+
+  // 4. При запуске страницы - определять сколько сладйдов всего и транслировать на страницу общее количество и текущий слайд
+    hideSlide();
+    showSlide(currentSlide);
 });
