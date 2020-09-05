@@ -511,7 +511,7 @@ const slides = document.querySelectorAll('.offer__slide'),
       }
   // Обработчики событий
   next.addEventListener('click', () => {
-    // Условие для возвращения слайдера в начальную позицию
+    // Условие для возвращения слайдера в начальную позицию? когда промотали все слайды и значение офсета = ширина одного слайда умножить на количество слайдов
     if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)){
       offset = 0;
     } else {
