@@ -420,8 +420,15 @@ const menuCards = document.querySelector('.menu_cards');
   //   .then(res => console.log(res));
 
   // Задача: реализовать слайдер, алгоритм в комментариях к коду
+    // После здесь же делаем слайдер карусель
+      // Затем делаем навигацию по слайдам в виде точек. Алгоритм 
+      // 1. получаем весь слайдер со страницы и установить ему position relative, так как точки спозиционированы внизу слайдера абсолютно
+      // 2. создать обертку для точек
+      // 3. создать количество точек равное количеству слайдов (метод перебора или цикл). для каждой точки атрибут соответствия слайду и класс активности - какой слайд сейчас активен
+      // 4. когда кликаем на точку - перемещаемся на соответствующий слайд
 
-  // 1. получить элементы со страницы, 
+
+  // получить элементы со страницы
 const slides = document.querySelectorAll('.offer__slide'),
       prev = document.querySelector('.offer__slider-prev'),
       next = document.querySelector('.offer__slider-next'),
@@ -430,12 +437,16 @@ const slides = document.querySelectorAll('.offer__slide'),
       // Тут элементы для карусели
       slidesWrapper = document.querySelector('.offer__slider-wrapper'),
       slidesField = document.querySelector('.offer__slider-inner'), 
-      width = window.getComputedStyle(slidesWrapper).width;
+      width = window.getComputedStyle(slidesWrapper).width,
+      // Получим весь слайдер для навигации
+      slider = document.querySelector('.offer__slider');
 
-  // 2. сделать индекс текущего слайда и получить общее количество слайдов
+  // сделать индекс текущего слайда и получить общее количество слайдов
+    // оставляем его для счетчика слайдов на странице
   let currentSlide = 1;
-
-  // Для счетчика возьмем функционал из предыдущего слайдера? но дополним, так как функции showSlides нет
+  
+  // Для счетчика возьмем функционал из предыдущего слайдера, но дополним, так как функции showSlides нет
+  const addZeroToCountNumber = () => {
     if (slides.length < 10) {
       total.textContent = `0${slides.length}`;
       current.textContent = `0${currentSlide}`
@@ -443,6 +454,8 @@ const slides = document.querySelectorAll('.offer__slide'),
       total.textContent = slides.length;
       current.textContent = currentSlide;
     }
+  };
+  addZeroToCountNumber();
 
   // Перерменная-ориентрир, чтобы знать насколько мы отступили вправо или влево
   let offset = 0;
@@ -450,18 +463,52 @@ const slides = document.querySelectorAll('.offer__slide'),
   // Назначаем ширину поля для слайдера карусели в css
   slidesField.style.width = 100 * slides.length +'%';
 
-  // Уберем слайды вправо с помощью свойств flex и transition
+  // Следующий кусоклучше указать в css файле или короче будет с помощью свойства css текст
+  // Выстроим слайды в полоску с помощью flex
   slidesField.style.display = 'flex';
+  // Плавное передвижение достигается с помощью transition
   slidesField.style.transition = '0.5s all';
-
-  // скрываем элементы не в области видимости
+  // скрываем слайды не в области видимости
   slidesWrapper.style.overflow = 'hidden';
 
   // Убедимся, что все слайды равны по ширине
   slides.forEach(slide => {
     slide.style.width = width;
-  })
+  });
 
+    // Установить слайдеру относитильное позиционирование для правильного отображения навигации
+    slider.style.position = 'relative';
+
+    // Создаем контейнер для точек
+    const sliderIndicators = document.createElement('ol'),
+          // создадим пустой массив для внутренних точек
+          dots = [];
+    sliderIndicators.classList.add('slider-indicators');
+    slider.append(sliderIndicators);
+
+    // создаем внутри точки по количеству слайдов
+    slides.forEach((slide, index) => {
+      const dot = document.createElement('li');
+      dot.classList.add('dot');
+
+        // Устанавливаем связь со слайдами: получается, что индекс = номеру слайда
+        dot.setAttribute('data-slide-to', index + 1);
+
+        // Проверка на активный слайд
+        if (index == 0) {
+          dot.style.opacity = 1;
+        }
+
+        sliderIndicators.append(dot);
+        // Запушим точку в наш массив
+        dots.push(dot);
+      });
+
+      // Функция установки размытия навигации на текущий слайд
+      const changeNavigationOpacity = () => {
+        dots.forEach(dot => dot.style.opacity = '.5');
+        dots[currentSlide - 1].style.opacity = 1;  
+      }
   // Обработчики событий
   next.addEventListener('click', () => {
     // Условие для возвращения слайдера в начальную позицию
@@ -481,11 +528,11 @@ const slides = document.querySelectorAll('.offer__slide'),
     }
 
     // Условие для 0 перед счетчиком меньше 10
-    if (slides.length < 10) {
-      current.textContent = `0${currentSlide}`
-    } else {
-      current.textContent = currentSlide;
-    }
+    addZeroToCountNumber();
+
+
+    // Для отображения навигации
+    changeNavigationOpacity();
   });
 
   prev.addEventListener('click', () => {
@@ -506,16 +553,31 @@ const slides = document.querySelectorAll('.offer__slide'),
     }
 
     // Условие для 0 перед счетчиком меньше 10
-    if (slides.length < 10) {
-      current.textContent = `0${currentSlide}`
-    } else {
-      current.textContent = currentSlide;
-        }
+    addZeroToCountNumber();
+
+    changeNavigationOpacity();
   });
+
+  // Функционал: нажал на навигацию - переключился на соответствующий слайд
+  // алгоритм: меняется offset, двигается слайд. меняется opacity, меняется счетчик
+  dots.forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      const slideTo = e.target.getAttribute('data-slide-to');
+      currentSlide = slideTo
+
+      offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+      slidesField.style.transform = `translateX(-${offset}px)`;
+
+      addZeroToCountNumber();
+
+      changeNavigationOpacity();
+    });
+  });
+    
   // // Вызов функции показа слайдов перед ее объеявлением
   // showSlides(currentSlide);
 
-  // // 4. Отдельно вынесено получение общего количества слайдов в документе. чтобы сделать это один раз, а не каждый раз, когда вызываем функцию
+  // //  Отдельно вынесено получение общего количества слайдов в документе. чтобы сделать это один раз, а не каждый раз, когда вызываем функцию
   // if (slides.length < 10) {
   //   total.textContent = `0${slides.length}`;
   // } else {
@@ -551,8 +613,5 @@ const slides = document.querySelectorAll('.offer__slide'),
   // // Навешиваем обработчик события клика на каждую стрелку, работает только с колбэк функцией (ошибся сначала)
   // next.addEventListener('click', () => plusSlides(1));
   // prev.addEventListener('click', () => plusSlides(-1));
-
-  // Делаем слайдер карусель
-
 
 });
