@@ -509,13 +509,17 @@ const slides = document.querySelectorAll('.offer__slide'),
         dots.forEach(dot => dot.style.opacity = '.5');
         dots[currentSlide - 1].style.opacity = 1;  
       }
+
+      // Функция для перевода в число и удаления всех не цифр со строки
+      const deleteNotDigits = (str) =>  +str.replace(/\D/g, '');
+
   // Обработчики событий
   next.addEventListener('click', () => {
     // Условие для возвращения слайдера в начальную позицию? когда промотали все слайды и значение офсета = ширина одного слайда умножить на количество слайдов
-    if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)){
+    if (offset == deleteNotDigits(width) * (slides.length - 1)){
       offset = 0;
     } else {
-      offset += +width.slice(0, width.length - 2);
+      offset += deleteNotDigits(width);
     }
     // Двигаем слайдер
     slidesField.style.transform = `translateX(-${offset}px)`;
@@ -538,9 +542,9 @@ const slides = document.querySelectorAll('.offer__slide'),
   prev.addEventListener('click', () => {
     // Условие для возвращения слайдера в начальную позицию
     if (offset == 0){
-      offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+      offset = deleteNotDigits(width) * (slides.length - 1);
     } else {
-      offset -= +width.slice(0, width.length - 2);
+      offset -= deleteNotDigits(width);
     }
     // Двигаем слайдер
     slidesField.style.transform = `translateX(-${offset}px)`
@@ -565,7 +569,7 @@ const slides = document.querySelectorAll('.offer__slide'),
       const slideTo = e.target.getAttribute('data-slide-to');
       currentSlide = slideTo
 
-      offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+      offset = deleteNotDigits(width) * (slideTo - 1);
       slidesField.style.transform = `translateX(-${offset}px)`;
 
       addZeroToCountNumber();
