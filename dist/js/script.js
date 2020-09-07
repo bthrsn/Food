@@ -618,4 +618,79 @@ const slides = document.querySelectorAll('.offer__slide'),
   // next.addEventListener('click', () => plusSlides(1));
   // prev.addEventListener('click', () => plusSlides(-1));
 
+  // Задача сделать калькулятор калорий на сайте
+  // алгоритм: собираем данные и подставляем в формулы.
+
+  const result = document.querySelector('.calculating__result span')
+  let sex = 'woman',
+   height, weight, age, 
+   ratio = 1.375;
+
+  // функция для расчета суточной нормы калорий
+  function calcTotal() {
+    // Начать с проверки, все ли данные собрали
+    if (!sex || !height || !weight || !age || !ratio) {
+      result.textContent = '____';
+      return;
+    }
+
+    // Теперь условия для формулы для женщин и мужчин
+    if (sex === 'woman') {
+      result.textContent = Math.round(ratio * (447.36 + (9.2 * weight) + (3.1 * height) - (4.3 * age)));
+    } else {
+      result.textContent = Math.round(ratio * (88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)));
+    }
+  }
+  calcTotal()
+  // Функция для приема данных с дивов переключателей, для нее нужен родитель и класс активности
+  function getStaticInfo(parentSelector, activeClass) {
+    // Сначала получим все дивы в родителе
+    const elements = document.querySelectorAll(`${parentSelector} div`);
+
+    elements.forEach(elem => {
+      elem.addEventListener('click', (e) => {
+        if (e.target.getAttribute('data-ratio')) {
+          ratio = +e.target.getAttribute('data-ratio');
+        } else {
+          sex = e.target.getAttribute('id');
+        }
+  
+        // Удаляем у всех элементов класс активности 
+        elements.forEach(elem => elem.classList.remove(activeClass));
+        // Назначаем его элементу, по которому кликнули
+        e.target.classList.add(activeClass);
+        calcTotal();
+      });
+      });
+    }
+
+  // Вызываем эту функцию 2 раза для блока с гендерами и активностью
+  getStaticInfo('#gender', 'calculating__choose-item_active');
+  getStaticInfo('.calculating__choose_big', 'calculating__choose-item_active');
+
+  // Принимаем данные от пользователя - рост, вес и возраст
+  function getDynamicInfo(selector) {
+    const input = document.querySelector(selector);
+
+    input.addEventListener('input', () => {
+      // удобнее всего проверять данные можно с помощью switch case
+      switch(input.getAttribute('id')) {
+        case 'height':
+          height = +input.value;
+          break;
+        case 'weight':
+          weight = +input.value;
+          break;
+        case 'age':
+          age = +input.value;
+          break;
+      }
+      calcTotal();
+    });
+  }
+
+  // Вызвать функцию 3 раза сс разными аргументами
+  getDynamicInfo('#height');
+  getDynamicInfo('#weight');
+  getDynamicInfo('#age');
 });
