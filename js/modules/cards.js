@@ -113,4 +113,4 @@ const menuCards = document.querySelector('.menu_cards');
 
 }
 
-module.exports = cards;
+export default cards;

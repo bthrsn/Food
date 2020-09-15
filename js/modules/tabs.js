@@ -49,4 +49,4 @@ function tabs() {
 }
 
 // Используем синтаксис commonjs
-module.exports = tabs;
+export default tabs;
