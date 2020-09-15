@@ -1,8 +1,9 @@
+import {closeModal, openModal} from './modal';
+import {postData} from '../services/services';
 // Задача: все ФОРМЫ принимают данные и отправляют на сервер
-
-function forms() {
+function forms(formSelector, modalTimerId) {
   // выполним сначала с помощью XML 
-  const forms = document.querySelectorAll('form');
+  const forms = document.querySelectorAll(formSelector);
 
   // создадим объект, в котором будут тексты сообщений
   const message = {
@@ -15,21 +16,6 @@ function forms() {
   forms.forEach(item => {
     bindPostData(item);
   })
-
-  // функция для работы с сервером 
-  // Нужно указать. что это асинхронный код (async), чтобы не было ошибки, так как мы не знаем точное время, когда нам вернуться данные с promise
-  const postData = async (url, data) => {
-    // ставим await перед теми данными, которых нам нужно дождаться
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json'
-      },
-      body: data
-    });
-  // здесь тоже нужен await, так как тут тоже promise
-    return await res.json();
-  };
 
   // функция получения данных из формы
   function bindPostData(form) {
@@ -105,7 +91,7 @@ function forms() {
       const prevModalDialog = document.querySelector('.modal__dialog');
       // Сперва спрячем это окно
       prevModalDialog.classList.add('hide');
-      openModal();
+      openModal('.modal', modalTimerId);
 
       // Создадим новое окно с помощью js
       const thanksModal = document.createElement('div');
@@ -124,7 +110,7 @@ function forms() {
           thanksModal.remove();
           prevModalDialog.classList.add('show');
           prevModalDialog.classList.remove('hide');
-          closeModal();
+          closeModal('.modal');
           }, 4000);
     }
 

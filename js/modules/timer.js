@@ -1,7 +1,6 @@
     // Задача, сделать ТАЙМЕР
 
-function timer() {
-    const deadline = '2020-09-17';
+function timer(id, deadline) {
 
     const getTimeRemaining = (endtime) => {
       // делаем тех переменную, в которой будет количество оставшихся миллисекунд
@@ -60,7 +59,7 @@ function timer() {
       updateClock();
     }
   
-    setClock('.timer', deadline);
+    setClock(id, deadline);
   
 }
 

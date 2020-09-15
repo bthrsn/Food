@@ -7,19 +7,19 @@
       // 4. когда кликаем на точку - перемещаемся на соответствующий слайд
 
 
-function slider() {
+function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, field}) {
   // получить элементы со страницы
-  const slides = document.querySelectorAll('.offer__slide'),
-        prev = document.querySelector('.offer__slider-prev'),
-        next = document.querySelector('.offer__slider-next'),
-        current = document.querySelector('#current'),
-        total = document.querySelector('#total'),
+  const slides = document.querySelectorAll(slide),
+        prev = document.querySelector(prevArrow),
+        next = document.querySelector(nextArrow),
+        current = document.querySelector(currentCounter),
+        total = document.querySelector(totalCounter),
         // Тут элементы для карусели
-        slidesWrapper = document.querySelector('.offer__slider-wrapper'),
-        slidesField = document.querySelector('.offer__slider-inner'), 
+        slidesWrapper = document.querySelector(wrapper),
+        slidesField = document.querySelector(field), 
         width = window.getComputedStyle(slidesWrapper).width,
         // Получим весь слайдер для навигации
-        slider = document.querySelector('.offer__slider');
+        slider = document.querySelector(container);
 
 // сделать индекс текущего слайда и получить общее количество слайдов
 // оставляем его для счетчика слайдов на странице

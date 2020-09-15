@@ -1,5 +1,6 @@
-// Задача: шаблонизировать КАРТОЧКИ меню
+import {getResource} from '../services/services'
 
+// Задача: шаблонизировать КАРТОЧКИ меню
 function cards() {
 const menuCards = document.querySelector('.menu_cards');
 
@@ -54,17 +55,6 @@ const menuCards = document.querySelector('.menu_cards');
       // return menuCards.insertAdjacentHTML('afterbegin', card);
       }
   }
-
-  // Получаем информацию для карточек с сервера с помощью get запроса
-  const getResource = async (url) => {
-    const res = await fetch(url);
-
-    // Так как 404 или 500 не повлекут за собо ошибки, этот момент отрабтаем вручную с помощью свойств .ok и status
-    if (!res.ok) {
-        throw new Error(`Couldn't fetch ${url}, status: ${res.status}`)
-    }
-    return await res.json();
-  };
 
   // Способ формирования верстки с помощью класов
   // getResource('http://localhost:3000/menu')

@@ -234,8 +234,10 @@ function calc() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-// Задача: шаблонизировать КАРТОЧКИ меню
+/* harmony import */ var _services_services__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/services */ "./js/services/services.js");
 
+
+// Задача: шаблонизировать КАРТОЧКИ меню
 function cards() {
 const menuCards = document.querySelector('.menu_cards');
 
@@ -290,17 +292,6 @@ const menuCards = document.querySelector('.menu_cards');
       // return menuCards.insertAdjacentHTML('afterbegin', card);
       }
   }
-
-  // Получаем информацию для карточек с сервера с помощью get запроса
-  const getResource = async (url) => {
-    const res = await fetch(url);
-
-    // Так как 404 или 500 не повлекут за собо ошибки, этот момент отрабтаем вручную с помощью свойств .ok и status
-    if (!res.ok) {
-        throw new Error(`Couldn't fetch ${url}, status: ${res.status}`)
-    }
-    return await res.json();
-  };
 
   // Способ формирования верстки с помощью класов
   // getResource('http://localhost:3000/menu')
@@ -362,11 +353,14 @@ const menuCards = document.querySelector('.menu_cards');
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-// Задача: все ФОРМЫ принимают данные и отправляют на сервер
+/* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modal */ "./js/modules/modal.js");
+/* harmony import */ var _services_services__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/services */ "./js/services/services.js");
 
-function forms() {
+
+// Задача: все ФОРМЫ принимают данные и отправляют на сервер
+function forms(formSelector, modalTimerId) {
   // выполним сначала с помощью XML 
-  const forms = document.querySelectorAll('form');
+  const forms = document.querySelectorAll(formSelector);
 
   // создадим объект, в котором будут тексты сообщений
   const message = {
@@ -379,21 +373,6 @@ function forms() {
   forms.forEach(item => {
     bindPostData(item);
   })
-
-  // функция для работы с сервером 
-  // Нужно указать. что это асинхронный код (async), чтобы не было ошибки, так как мы не знаем точное время, когда нам вернуться данные с promise
-  const postData = async (url, data) => {
-    // ставим await перед теми данными, которых нам нужно дождаться
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json'
-      },
-      body: data
-    });
-  // здесь тоже нужен await, так как тут тоже promise
-    return await res.json();
-  };
 
   // функция получения данных из формы
   function bindPostData(form) {
@@ -438,7 +417,7 @@ function forms() {
       // request.send(json);
 
       // Функция работы с сервером
-      postData('http://localhost:3000/requests', json)
+      Object(_services_services__WEBPACK_IMPORTED_MODULE_1__["postData"])('http://localhost:3000/requests', json)
       // Обрабатываем результат запроса с помощью then
       .then(data => {
         // заменили request.remove на data - это те данные, которые нам вернул сервер
@@ -469,7 +448,7 @@ function forms() {
       const prevModalDialog = document.querySelector('.modal__dialog');
       // Сперва спрячем это окно
       prevModalDialog.classList.add('hide');
-      openModal();
+      Object(_modal__WEBPACK_IMPORTED_MODULE_0__["openModal"])('.modal', modalTimerId);
 
       // Создадим новое окно с помощью js
       const thanksModal = document.createElement('div');
@@ -488,7 +467,7 @@ function forms() {
           thanksModal.remove();
           prevModalDialog.classList.add('show');
           prevModalDialog.classList.remove('hide');
-          closeModal();
+          Object(_modal__WEBPACK_IMPORTED_MODULE_0__["closeModal"])('.modal');
           }, 4000);
     }
 
@@ -521,64 +500,70 @@ function forms() {
 /*!*****************************!*\
   !*** ./js/modules/modal.js ***!
   \*****************************/
-/*! exports provided: default */
+/*! exports provided: default, closeModal, openModal */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-// Задача, сделать МОДАЛЬНОЕ ОКНО
-
-function modal() {
-  // Делаем через дата атрибуты
-  const modal = document.querySelector('.modal'),
-        modalOpenBtn = document.querySelectorAll('[data-modal]');
-
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "closeModal", function() { return closeModal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "openModal", function() { return openModal; });
   // функция для закрытия окна, так как она повторяется, а нужно следовать DRY = dont repeat yorself
-  function closeModal() {
+  function closeModal(modalSelector) {
+    const modal = document.querySelector(modalSelector);
     modal.classList.add('hide');
     modal.classList.remove('show');
     document.body.style.overflow = ''
   }
 
-  const openModal = () => {
+  function openModal(modalSelector, modalTimerId) {
+    const modal = document.querySelector(modalSelector);
     modal.classList.remove('hide');
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
     // Если пользователь уже открыл окно, оно не будет открываться снова через указанное время
-    clearInterval(modalTimerId);
-  }
-
-  // остановим показ модального окна после первой прокрутки
-  const showModalByScroll = () => {
-    if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-      openModal();
-      window.removeEventListener('scroll', showModalByScroll);  
+    // Сделаем условие запуска, только если задан этот аргумент
+    if (modalTimerId) {
+      clearInterval(modalTimerId);
     }
   }
 
+// Задача, сделать МОДАЛЬНОЕ ОКНО
+
+function modal(triggerSelector, modalSelector, modalTimerId) {
+  // Делаем через дата атрибуты
+  const modal = document.querySelector(modalSelector),
+        modalOpenBtn = document.querySelectorAll(triggerSelector);
+
   modalOpenBtn.forEach(item => {
-    item.addEventListener('click', openModal);
+    // Чтобы не вызвать функцию сразу при загрузке страницы - оборачиваем ее в другую колбэк функцию
+    item.addEventListener('click', () => openModal(modalSelector, modalTimerId));
   });
 
+  // Остановим показ модального окна после первой прокрутки
+  const showModalByScroll = () => {
+    if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+      openModal(modalSelector, modalTimerId);
+      window.removeEventListener('scroll', showModalByScroll);  
+    }
+  }
+  
+  // Вызываем модальное окно если пользователь проскролил страницу до конца
+  window.addEventListener('scroll', showModalByScroll);
+  
   // Если кликаем вне окна - оно закрывается
   modal.addEventListener('click', (e) => {
     if (e.target === modal || e.target.getAttribute('data-close') == '') {
-      closeModal();
+      closeModal(modalSelector);
     }
   });
 
   // Закрываем окно на клавишу esc
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Escape' && modal.classList.contains('show')) {
-      closeModal();
+      closeModal(modalSelector);
     }
   });
 
-  // Вызываем модальное окно через некоторое время
-  const modalTimerId = setTimeout(openModal, 50000);
-
-  // Вызываем модальное окно если пользователь проскролил страницу до конца
-  window.addEventListener('scroll', showModalByScroll);
 
 }
 
@@ -605,19 +590,19 @@ __webpack_require__.r(__webpack_exports__);
       // 4. когда кликаем на точку - перемещаемся на соответствующий слайд
 
 
-function slider() {
+function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, field}) {
   // получить элементы со страницы
-  const slides = document.querySelectorAll('.offer__slide'),
-        prev = document.querySelector('.offer__slider-prev'),
-        next = document.querySelector('.offer__slider-next'),
-        current = document.querySelector('#current'),
-        total = document.querySelector('#total'),
+  const slides = document.querySelectorAll(slide),
+        prev = document.querySelector(prevArrow),
+        next = document.querySelector(nextArrow),
+        current = document.querySelector(currentCounter),
+        total = document.querySelector(totalCounter),
         // Тут элементы для карусели
-        slidesWrapper = document.querySelector('.offer__slider-wrapper'),
-        slidesField = document.querySelector('.offer__slider-inner'), 
+        slidesWrapper = document.querySelector(wrapper),
+        slidesField = document.querySelector(field), 
         width = window.getComputedStyle(slidesWrapper).width,
         // Получим весь слайдер для навигации
-        slider = document.querySelector('.offer__slider');
+        slider = document.querySelector(container);
 
 // сделать индекс текущего слайда и получить общее количество слайдов
 // оставляем его для счетчика слайдов на странице
@@ -812,10 +797,10 @@ function slider() {
 __webpack_require__.r(__webpack_exports__);
 // Задача, сделать переключатель ТАБОВ
 
-function tabs() {
-  const tabs = document.querySelectorAll('.tabheader__item'),
-  tabsContent = document.querySelectorAll('.tabcontent'),
-  tabsParent = document.querySelector('.tabheader__items');
+function tabs(tabsSelector, tabsContentSelector, tabParentSelector, activeClass) {
+  const tabs = document.querySelectorAll(tabsSelector),
+  tabsContent = document.querySelectorAll(tabsContentSelector),
+  tabsParent = document.querySelector(tabParentSelector);
 
   // Функция скрывает табы и удаляет класс активности с заголовков
   const hideTabContent = () => {
@@ -825,7 +810,7 @@ function tabs() {
     });
 
     tabs.forEach(item => {
-      item.classList.remove('tabheader__item_active');
+      item.classList.remove(activeClass);
     });
   }
 
@@ -835,7 +820,7 @@ function tabs() {
     tabsContent[i].classList.add('show', 'fade');
     tabsContent[i].classList.remove('hide');
 
-    tabs[i].classList.add('tabheader__item_active');
+    tabs[i].classList.add(activeClass);
   }
 
   hideTabContent();
@@ -848,7 +833,7 @@ function tabs() {
     // Объявим event.target в переменную, чтобы постоянно ее не писать
     const target = event.target;
 
-    if (target && target.classList.contains('tabheader__item')) {
+    if (target && target.classList.contains(tabsSelector.slice(1))) {
       tabs.forEach((item, i) => {
         if (target == item) {
           hideTabContent();
@@ -877,8 +862,7 @@ function tabs() {
 __webpack_require__.r(__webpack_exports__);
     // Задача, сделать ТАЙМЕР
 
-function timer() {
-    const deadline = '2020-09-17';
+function timer(id, deadline) {
 
     const getTimeRemaining = (endtime) => {
       // делаем тех переменную, в которой будет количество оставшихся миллисекунд
@@ -937,7 +921,7 @@ function timer() {
       updateClock();
     }
   
-    setClock('.timer', deadline);
+    setClock(id, deadline);
   
 }
 
@@ -969,15 +953,70 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 window.addEventListener('DOMContentLoaded', () => {
+  // Вызываем модальное окно через некоторое время
+  const modalTimerId = setTimeout(() => Object(_modules_modal__WEBPACK_IMPORTED_MODULE_3__["openModal"])('.modal', modalTimerId), 50000);
+  
   Object(_modules_calc__WEBPACK_IMPORTED_MODULE_0__["default"])();
   Object(_modules_cards__WEBPACK_IMPORTED_MODULE_1__["default"])();
-  Object(_modules_forms__WEBPACK_IMPORTED_MODULE_2__["default"])();
-  Object(_modules_modal__WEBPACK_IMPORTED_MODULE_3__["default"])();
-  Object(_modules_slider__WEBPACK_IMPORTED_MODULE_4__["default"])();
-  Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_5__["default"])();
-  Object(_modules_timer__WEBPACK_IMPORTED_MODULE_6__["default"])();
+  Object(_modules_forms__WEBPACK_IMPORTED_MODULE_2__["default"])('form', modalTimerId);
+  Object(_modules_modal__WEBPACK_IMPORTED_MODULE_3__["default"])('[data-modal]', '.modal', modalTimerId);
+  Object(_modules_slider__WEBPACK_IMPORTED_MODULE_4__["default"])({
+    container: '.offer__slider', 
+    nextArrow: '.offer__slider-next', 
+    prevArrow: '.offer__slider-prev', 
+    slide: '.offer__slide', 
+    totalCounter: '#total', 
+    currentCounter: '#current', 
+    wrapper: '.offer__slider-wrapper', 
+    field: '.offer__slider-inner',
+  });
+  Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_5__["default"])('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active');
+  Object(_modules_timer__WEBPACK_IMPORTED_MODULE_6__["default"])('.timer', '2020-09-17');
 });
+
+
+/***/ }),
+
+/***/ "./js/services/services.js":
+/*!*********************************!*\
+  !*** ./js/services/services.js ***!
+  \*********************************/
+/*! exports provided: postData, getResource */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "postData", function() { return postData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResource", function() { return getResource; });
+// Функция для работы с сервером 
+// Нужно указать. что это асинхронный код (async), чтобы не было ошибки, так как мы не знаем точное время, когда нам вернуться данные с promise
+const postData = async (url, data) => {
+  // Ставим await перед теми данными, которых нам нужно дождаться
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    body: data
+  });
+// Здесь тоже нужен await, так как тут тоже promise
+  return await res.json();
+};
+
+
+// Получаем информацию для карточек с сервера с помощью get запроса
+const getResource = async (url) => {
+  const res = await fetch(url);
+
+  // Так как 404 или 500 не повлекут за собо ошибки, этот момент отрабтаем вручную с помощью свойств .ok и status
+  if (!res.ok) {
+      throw new Error(`Couldn't fetch ${url}, status: ${res.status}`)
+  }
+  return await res.json();
+};
+
 
 
 /***/ })
