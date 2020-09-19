@@ -8,16 +8,16 @@
   "author": "",
   "license": "ISC",
   "browserslist": [
-    "last 2 chrome versions",
-    "last 2 firefox versions",
-    "last 2 ios versions"
+    "> 1%"
   ],
   "devDependencies": {
-    "@babel/core": "^7.7.0",
-    "@babel/preset-env": "^7.7.1",
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
     "autoprefixer": "^9.7.1",
-    "babel-loader": "^8.0.6",
+    "babel-loader": "^8.1.0",
     "browser-sync": "^2.26.7",
+    "core-js": "^3.6.5",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.2.0",
     "gulp-postcss": "^8.0.0",
@@ -35,5 +35,10 @@
     "url": "https://github.com/bthrsn/Food/issues"
   },
   "homepage": "https://github.com/bthrsn/Food#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@babel/polyfill": "^7.11.5",
+    "es6-promise": "^4.2.8",
+    "nodelist-foreach-polyfill": "^1.2.0"
+  }
 }

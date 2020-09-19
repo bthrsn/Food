@@ -1,3 +1,8 @@
+// Импорт полифила для промисов
+require('es6-promise/auto');
+// Импорт полифила для forEach - так как мы его установили как npm пакет, берем его из папки node modules
+import 'nodelist-foreach-polyfill';
+
 import calc from './modules/calc';
 import cards from './modules/cards';
 import forms from './modules/forms';
@@ -26,5 +31,5 @@ window.addEventListener('DOMContentLoaded', () => {
     field: '.offer__slider-inner',
   });
   tabs('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active');
-  timer('.timer', '2020-09-17');
+  timer('.timer', '2020-10-31');
 });
